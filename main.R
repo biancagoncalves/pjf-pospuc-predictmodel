@@ -55,6 +55,25 @@ output_notificacao$plot_real_predict
 
 
 
+meta_h = seq(as.Date('2021-07-01'),as.Date('2025-12-01'), 'month') 
+meta_forecast = forecast(output_notificacao$modelo, h = length(meta_h))
+
+
+tibble::tibble(
+  ds = meta_h,
+  value = meta_forecast$mean,
+  type = 'forecast'
+) %>% 
+  dplyr::bind_rows(
+    tibble::tibble(
+      ds = output_notificacao$original_tbl$ds,
+      value = output_notificacao$original_tbl$y,
+      type = 'real'
+    )
+  ) %>% 
+  ggplot(aes(x=ds, y=value, group=type)) +
+  geom_line(aes(color=type)) 
+
 
 # Modelo para obito -------------------------------------------------------
 
@@ -74,4 +93,25 @@ x = output_obito$tbl_final %>%
 MLmetrics::MAPE(x$predict, x$real)
 
 output_obito$plot_real_predict
+
+
+
+meta_h = seq(as.Date('2021-07-01'),as.Date('2022-12-01'), 'month') 
+meta_forecast = forecast(output_obito$modelo, h = length(meta_h))
+
+
+tibble::tibble(
+  ds = meta_h,
+  value = meta_forecast$mean,
+  type = 'forecast'
+) %>% 
+  dplyr::bind_rows(
+    tibble::tibble(
+      ds = output_obito$original_tbl$ds,
+      value = output_obito$original_tbl$y,
+      type = 'real'
+    )
+  ) %>% 
+  ggplot(aes(x=ds, y=value, group=type)) +
+  geom_line(aes(color=type)) 
 
